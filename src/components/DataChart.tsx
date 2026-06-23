@@ -12,7 +12,7 @@ import {
   BarChart,
   Bar,
   AreaChart,
-  Area
+  Area,
 } from "recharts";
 import { useTheme } from "next-themes";
 
@@ -25,49 +25,107 @@ interface DataChartProps {
   color?: string;
 }
 
-export function DataChart({ 
-  data, 
-  type = "line", 
-  xKey, 
-  yKey, 
-  height = 300, 
-  color = "#8ab4f8" 
+export function DataChart({
+  data,
+  type = "line",
+  xKey,
+  yKey,
+  height = 300,
+  color,
 }: DataChartProps) {
-  const { theme, systemTheme } = useTheme();
-  const currentTheme = theme === "system" ? systemTheme : theme;
-  const isDark = currentTheme === "dark";
-  
-  const gridColor = isDark ? "#333" : "#e5e7eb";
-  const textColor = isDark ? "#888" : "#666";
-  const tooltipBg = isDark ? "#111" : "#fff";
-  const tooltipBorder = isDark ? "#333" : "#e5e7eb";
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => setMounted(true), []);
+
+  if (!mounted) {
+    return (
+      <div
+        style={{
+          height: `${height}px`,
+          minHeight: 300,
+          background: "var(--bg2)",
+          border: "1px solid var(--border)",
+          borderRadius: "var(--radius)",
+          margin: "1.5rem 0",
+        }}
+      />
+    );
+  }
+  const isDark = resolvedTheme !== "light";
+
+  const lineColor   = color ?? (isDark ? "#c9b97a" : "#8b6914");
+  const gridColor   = isDark ? "#2e2e2c" : "#d4d4ce";
+  const textColor   = isDark ? "#6b6a66" : "#8a8a82";
+  const tooltipBg   = isDark ? "#1a1a18" : "#f3f3f0";
+  const tooltipBorder = isDark ? "#2e2e2c" : "#d4d4ce";
+  const tooltipText = isDark ? "#edece8" : "#1a1a18";
+
+  const commonProps = {
+    data,
+    margin: { top: 4, right: 4, left: -16, bottom: 0 },
+  };
+
+  const axisStyle = { stroke: textColor, tick: { fill: textColor, fontSize: 12 } };
+
+  const tooltipStyle = {
+    contentStyle: {
+      backgroundColor: tooltipBg,
+      borderColor: tooltipBorder,
+      color: tooltipText,
+      fontSize: 12,
+      borderRadius: 6,
+    },
+  };
 
   return (
-    <div className="my-6 w-full rounded-xl border border-border p-4 bg-surface" style={{ height: `${height}px`, minHeight: 300 }}>
+    <div
+      style={{
+        height: `${height}px`,
+        minHeight: 300,
+        background: "var(--bg2)",
+        border: "1px solid var(--border)",
+        borderRadius: "var(--radius)",
+        padding: "1rem",
+        margin: "1.5rem 0",
+      }}
+    >
       <ResponsiveContainer width="100%" height="100%" minHeight={300}>
         {type === "line" ? (
-          <LineChart data={data}>
+          <LineChart {...commonProps}>
             <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-            <XAxis dataKey={xKey} stroke={textColor} tick={{fill: textColor}} />
-            <YAxis stroke={textColor} tick={{fill: textColor}} />
-            <Tooltip contentStyle={{ backgroundColor: tooltipBg, borderColor: tooltipBorder, color: isDark ? "#fff" : "#000" }} />
-            <Line type="monotone" dataKey={yKey} stroke={color} strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+            <XAxis dataKey={xKey} {...axisStyle} />
+            <YAxis {...axisStyle} />
+            <Tooltip {...tooltipStyle} />
+            <Line
+              type="monotone"
+              dataKey={yKey}
+              stroke={lineColor}
+              strokeWidth={2}
+              dot={{ r: 3, fill: lineColor }}
+              activeDot={{ r: 5 }}
+            />
           </LineChart>
         ) : type === "area" ? (
-          <AreaChart data={data}>
+          <AreaChart {...commonProps}>
             <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-            <XAxis dataKey={xKey} stroke={textColor} tick={{fill: textColor}} />
-            <YAxis stroke={textColor} tick={{fill: textColor}} />
-            <Tooltip contentStyle={{ backgroundColor: tooltipBg, borderColor: tooltipBorder, color: isDark ? "#fff" : "#000" }} />
-            <Area type="monotone" dataKey={yKey} stroke={color} fill={color} fillOpacity={0.3} />
+            <XAxis dataKey={xKey} {...axisStyle} />
+            <YAxis {...axisStyle} />
+            <Tooltip {...tooltipStyle} />
+            <Area
+              type="monotone"
+              dataKey={yKey}
+              stroke={lineColor}
+              fill={lineColor}
+              fillOpacity={0.15}
+            />
           </AreaChart>
         ) : (
-          <BarChart data={data}>
+          <BarChart {...commonProps}>
             <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-            <XAxis dataKey={xKey} stroke={textColor} tick={{fill: textColor}} />
-            <YAxis stroke={textColor} tick={{fill: textColor}} />
-            <Tooltip contentStyle={{ backgroundColor: tooltipBg, borderColor: tooltipBorder, color: isDark ? "#fff" : "#000" }} />
-            <Bar dataKey={yKey} fill={color} radius={[4, 4, 0, 0]} />
+            <XAxis dataKey={xKey} {...axisStyle} />
+            <YAxis {...axisStyle} />
+            <Tooltip {...tooltipStyle} />
+            <Bar dataKey={yKey} fill={lineColor} radius={[4, 4, 0, 0]} />
           </BarChart>
         )}
       </ResponsiveContainer>
