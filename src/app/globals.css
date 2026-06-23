@@ -312,6 +312,17 @@ a:hover {
   color: var(--link);
 }
 
+/* ─── Navbar responsive ─── */
+.nav-desktop { display: flex; align-items: center; gap: 0.25rem; }
+.nav-mobile  { display: none; align-items: center; gap: 0.75rem; }
+.nav-mobile-menu { display: none; }
+
+@media (max-width: 600px) {
+  .nav-desktop { display: none !important; }
+  .nav-mobile  { display: flex !important; }
+  .nav-mobile-menu { display: block; }
+}
+
 /* ─── Footer link ─── */
 .footer-link {
   color: var(--text3);

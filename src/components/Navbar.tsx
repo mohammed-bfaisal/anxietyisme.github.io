@@ -58,11 +58,8 @@ export function Navbar() {
           </span>
         </Link>
 
-        {/* Desktop nav */}
-        <nav
-          style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}
-          className="hidden-mobile"
-        >
+        {/* Desktop nav — hidden on mobile via globals.css */}
+        <nav className="nav-desktop">
           {navLinks.map((link) => {
             const active = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
             return (
@@ -77,8 +74,6 @@ export function Navbar() {
                   borderBottom: "none",
                   transition: "color 0.15s",
                 }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--text)"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = active ? "var(--text)" : "var(--text3)"; }}
               >
                 {link.label}
               </Link>
@@ -89,8 +84,8 @@ export function Navbar() {
           </span>
         </nav>
 
-        {/* Mobile controls */}
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }} className="show-mobile">
+        {/* Mobile controls — hidden on desktop via globals.css */}
+        <div className="nav-mobile">
           <ThemeToggle />
           <button
             onClick={() => setOpen(!open)}
@@ -98,11 +93,11 @@ export function Navbar() {
               background: "none",
               border: "1px solid var(--border)",
               color: "var(--text3)",
-              padding: "4px 7px",
+              padding: "4px 8px",
               borderRadius: "4px",
               cursor: "pointer",
               lineHeight: 1,
-              fontSize: "13px",
+              fontSize: "14px",
             }}
             aria-label="Toggle menu"
           >
@@ -111,14 +106,14 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Mobile dropdown */}
+      {/* Mobile dropdown — shown only when open on mobile */}
       {open && (
         <div
-          className="show-mobile"
+          className="nav-mobile-menu"
           style={{
             borderTop: "1px solid var(--border)",
             background: "var(--bg2)",
-            padding: "0.75rem 20px 1rem",
+            padding: "0.5rem 20px 1rem",
           }}
         >
           {navLinks.map((link) => {
@@ -130,11 +125,10 @@ export function Navbar() {
                 onClick={() => setOpen(false)}
                 style={{
                   display: "block",
-                  padding: "0.5rem 0",
+                  padding: "0.6rem 0",
                   fontSize: "14px",
                   color: active ? "var(--text)" : "var(--text3)",
-                  borderBottom: "none",
-                  borderTop: "1px solid var(--border)",
+                  borderBottom: "1px solid var(--border)",
                 }}
               >
                 {link.label}
@@ -143,15 +137,6 @@ export function Navbar() {
           })}
         </div>
       )}
-
-      <style>{`
-        .hidden-mobile { display: flex; }
-        .show-mobile   { display: none; }
-        @media (max-width: 600px) {
-          .hidden-mobile { display: none !important; }
-          .show-mobile   { display: flex !important; }
-        }
-      `}</style>
     </header>
   );
 }
